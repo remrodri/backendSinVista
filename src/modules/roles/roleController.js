@@ -13,6 +13,7 @@ const roleController = {
   async getRoleName(roleId) {
     try {
       const role = await RoleModel.findById(roleId);
+      console.log('role::: ', role);
       if (!role) {
         return null;
       }
