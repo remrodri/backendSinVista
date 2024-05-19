@@ -14,8 +14,8 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
 const corsOptions = {
-  // origin: "https://icy-cliff-0dbe5050f.5.azurestaticapps.net",
-  origin: "http://localhost:5173",
+  origin: "https://icy-cliff-0dbe5050f.5.azurestaticapps.net",
+  // origin: "http://localhost:5173",
   // methods: "GET,POST,PUT,PATCH,DELETE",
   // credentials:true,
   optionsSuccessStatus: 200,
