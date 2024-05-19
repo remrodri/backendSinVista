@@ -1,17 +1,18 @@
-const bycript = require("bcrypt");
+const bcrypt = require("bcrypt");
 
 const satlRounds = 10;
 
-export const hashPassword = async (password) => {
+const hashPassword = async (password) => {
   try {
-    const hashedPassword = await bycript.hash(password, satlRounds);
-    console.log('hashedPassword::: ', hashedPassword);
+    const hashedPassword = await bcrypt.hash(password, satlRounds);
+    console.log("hashedPassword::: ", hashedPassword);
+    return hashedPassword;
   } catch (error) {
     throw new Error(`Error al hashear password: ${error}`);
   }
 };
 
-export const comparePassword = async (password, hashedPassword) => {
+const comparePassword = async (password, hashedPassword) => {
   try {
     const match = await bcrypt.compare(password, hashedPassword);
     return match;
@@ -19,3 +20,4 @@ export const comparePassword = async (password, hashedPassword) => {
     throw new Error(`Error al comparar los passwords: ${error}`);
   }
 };
+module.exports = { hashPassword, comparePassword };
