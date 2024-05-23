@@ -17,7 +17,7 @@ const userController = {
   async registerUser(req, res) {
     try {
       const hashedPassword = await hashPassword("password");
-      console.log('hashedPassword::: ', hashedPassword);
+      console.log("hashedPassword::: ", hashedPassword);
       const newUser = new UserModel({
         firstName: req.body.firstName,
         lastName: req.body.lastName,
@@ -39,9 +39,11 @@ const userController = {
     try {
       const user = await UserModel.findOne({ email });
       if (!user || !bcrypt.compareSync(password, user.password)) {
-        return res
-          // .status(401)
-          .send({ message: "credenciales incorrectas" });
+        return (
+          res
+            // .status(401)
+            .send({ message: "credenciales incorrectas" })
+        );
       }
       const roleName = await roleController.getRoleName(user.roleId);
       if (!roleName) {
@@ -62,6 +64,30 @@ const userController = {
       res.status(500).json({ message: `Error interno del servidor` });
     }
   },
+  async updateUser(req, res) {
+    const { userId } = req.params;
+    const updateData = req.body;
+    try {
+      if (updateData.password) {
+        updateData.password = await hashPassword(updateData.password);
+      }
+      const updatedUser = await UserModel.findByIdAndUpdate(
+        userId,
+        updateData,
+        { new: true }
+      );
+      if (!updatedUser) {
+        return res.status(404).json({ message: "Usuario no encontrado" });
+      }
+      res
+        .status(200)
+        .json({ message: "Usuario actualizado con exito", user: updatedUser });
+    } catch (error) {
+      console.error("Error al actualizar el usuario: ", error);
+      res.status(500).json({ message: "Error interno del servidor" });
+    }
+  },
+
 };
 
 module.exports = userController;
