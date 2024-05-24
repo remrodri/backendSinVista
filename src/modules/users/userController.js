@@ -3,6 +3,7 @@ const UserModel = require("./userModel");
 const bcrypt = require("bcrypt");
 const roleController = require("../roles/roleController");
 const jwt = require("jsonwebtoken");
+const RecordController = require("../record/recordController");
 
 const userController = {
   async getAllUsers(req, res) {
@@ -27,8 +28,13 @@ const userController = {
         phone: req.body.phone,
         ci: req.body.ci,
       });
-      await newUser.save();
-      res.status(201).json({ message: `usuario registrado con exito` });
+      const savedUser = await newUser.save();
+      res
+        .status(201)
+        .json({
+          message: `usuario registrado con exito`,
+          userId: savedUser._id,
+        });
     } catch (error) {
       console.error(`Error al registrar usuario: ${error}`);
       res.status(500).json({ message: `Error interno del servidor` });
@@ -58,6 +64,7 @@ const userController = {
         "mipasswordsecreto1",
         { expiresIn: "30d" }
       );
+      await RecordController.recordLogin(user._id);
       res.json({ token });
     } catch (error) {
       console.error(`Error al iniciar sesion: ${error}`);
@@ -97,6 +104,15 @@ const userController = {
       res.status(200).json({ message: "Usuario eliminado con exito" });
     } catch (error) {
       console.error("Error al eliminar el usuario: ", error);
+      res.status(500).json({ message: "Error interno del servidor" });
+    }
+  },
+  async logout(req, res) {
+    try {
+      await RecordController.recordLogout(req.user.userId);
+      res.status(200).json({ message: "logout exitoso" });
+    } catch (error) {
+      console.error("Error al cerrar sesion: ", error);
       res.status(500).json({ message: "Error interno del servidor" });
     }
   },

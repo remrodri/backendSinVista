@@ -8,6 +8,7 @@ const RecordController = {
         eventType: "login",
       });
       await newRecord.save();
+      // console.log("login registrado")
     } catch (error) {
       console.error("Error al registrar inicio de sesion: ", error);
     }
