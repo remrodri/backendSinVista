@@ -1,4 +1,5 @@
-const mongoose =require ("mongoose");
+const mongoose = require("mongoose");
+const moment = require("moment-timezone");
 
 const userSchema = new mongoose.Schema({
   firstName: { type: String, required: true },
@@ -9,10 +10,10 @@ const userSchema = new mongoose.Schema({
   status: { type: Boolean, default: true },
   ci: { type: String, required: true },
   password: { type: String, required: true },
-  createAt: { type: Date, default: Date.now },
-  updateAt: { type: Date, default: Date.now },
+  createAt: { type: Date, default: () => moment.tz("America/La_Paz").toDate() },
+  updateAt: { type: Date, default: () => moment.tz("America/La_Paz").toDate() },
 });
 
 const UserModel = mongoose.model("User", userSchema);
 
-module.exports =UserModel;
+module.exports = UserModel;

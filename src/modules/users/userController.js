@@ -108,8 +108,9 @@ const userController = {
     }
   },
   async logout(req, res) {
+    console.log('req::: ', req.body);
     try {
-      await RecordController.recordLogout(req.user.userId);
+      await RecordController.recordLogout(req.body.userId);
       res.status(200).json({ message: "logout exitoso" });
     } catch (error) {
       console.error("Error al cerrar sesion: ", error);
