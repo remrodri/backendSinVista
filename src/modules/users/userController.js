@@ -4,6 +4,11 @@ const bcrypt = require("bcrypt");
 const roleController = require("../roles/roleController");
 const jwt = require("jsonwebtoken");
 const RecordController = require("../record/recordController");
+const QuestionModel = require("../recoveryPassword/questions/questionModel");
+const SetQuestionsAnswersModel = require("../recoveryPassword/setQuestionsAnswers/setQuestionAnswerModel");
+const { default: mongoose } = require("mongoose");
+const answerController = require("../recoveryPassword/answers/answerController");
+const AnswerModel = require("../recoveryPassword/answers/answerModel");
 
 const userController = {
   async getAllUsers(req, res) {
@@ -27,14 +32,38 @@ const userController = {
         roleId: req.body.roleId,
         phone: req.body.phone,
         ci: req.body.ci,
+        firstLogin: true,
       });
       const savedUser = await newUser.save();
-      res
-        .status(201)
-        .json({
-          message: `usuario registrado con exito`,
-          userId: savedUser._id,
-        });
+
+      // Selecciona 3 preguntas aleatorias
+      const questions = await QuestionModel.aggregate([
+        { $sample: { size: 3 } },
+      ]);
+      // console.log('questions::: ', questions);
+      // const emptyAnswers = createEmptyAnswers();
+      const questionsAnswers = await Promise.all(
+        questions.map(async (question) => {
+          const newAnswer = new AnswerModel({ content: "" });
+          const savedAnswer = await newAnswer.save();
+          return { questionId: question._id, answerId: savedAnswer._id };
+        })
+      );
+
+      // Crea un nuevo set de preguntas y respuestas vacío
+      const newSetQuestionAnswer = new SetQuestionsAnswersModel({
+        userId: savedUser._id,
+        questionsAnswers: questionsAnswers,
+      });
+      await newSetQuestionAnswer.save();
+      console.log("newSetQuestionAnswer::: ", newSetQuestionAnswer);
+
+      savedUser.setQuestionsAnswersId = newSetQuestionAnswer._id;
+      await savedUser.save();
+      res.status(201).json({
+        message: `usuario registrado con exito`,
+        userId: savedUser._id,
+      });
     } catch (error) {
       console.error(`Error al registrar usuario: ${error}`);
       res.status(500).json({ message: `Error interno del servidor` });
@@ -55,10 +84,12 @@ const userController = {
       if (!roleName) {
         return res.status(404).send({ message: `Rol de usario no encontrado` });
       }
+
       const token = jwt.sign(
         {
           userId: user._id,
           status: user.status,
+          firstLogin: user.firstLogin,
           roleName,
         },
         "mipasswordsecreto1",
@@ -108,13 +139,29 @@ const userController = {
     }
   },
   async logout(req, res) {
-    console.log('req::: ', req.body);
+    console.log("req::: ", req.body);
     try {
       await RecordController.recordLogout(req.body.userId);
       res.status(200).json({ message: "logout exitoso" });
     } catch (error) {
       console.error("Error al cerrar sesion: ", error);
       res.status(500).json({ message: "Error interno del servidor" });
+    }
+  },
+
+  async getUserById(req, res) {
+    const { userId } = req.params;
+    try {
+      const user = await UserModel.findById(userId).populate(
+        "setQuestionsAnswersId"
+      );
+      if (!user) {
+        return res.status(404).json({ message: "user no encontrado" });
+      }
+      res.status(200).json(user);
+    } catch (error) {
+      console.error(`Error al obtener el user: ${error}`);
+      res.status(500).json({ message: `Error interno del servidor` });
     }
   },
 };
