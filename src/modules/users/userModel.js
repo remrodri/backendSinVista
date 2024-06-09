@@ -10,8 +10,13 @@ const userSchema = new mongoose.Schema({
   status: { type: Boolean, default: true },
   ci: { type: String, required: true },
   password: { type: String, required: true },
+  firstLogin: { type: Boolean, required: true },
   createAt: { type: Date, default: () => moment.tz("America/La_Paz").toDate() },
   updateAt: { type: Date, default: () => moment.tz("America/La_Paz").toDate() },
+  setQuestionsAnswersId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "SetQuestionsAnswers",
+  },
 });
 
 const UserModel = mongoose.model("User", userSchema);
