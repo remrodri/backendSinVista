@@ -7,8 +7,8 @@ const route = "/tour-types";
 
 router.post(route, tourTypeController.createTourType);
 router.get(route, tourTypeController.getAllTourTypes);
-router.get(`${router}/:id`, tourTypeController.getTourTypeById);
-router.patch(`${router}/:id`, tourTypeController.updateTourType);
-router.delete(`${router}/:id`, tourTypeController.deleteTourType);
+router.get(`${route}/:id`, tourTypeController.getTourTypeById);
+router.patch(`${route}/:id`, tourTypeController.updateTourType);
+router.delete(`${route}/:id`, tourTypeController.deleteTourType);
 
 module.exports = router;

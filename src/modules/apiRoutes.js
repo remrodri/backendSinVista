@@ -8,6 +8,7 @@ const setQuestionsAnswers = require("./recoveryPassword/setQuestionsAnswers/setQ
 // const tourPackages = require("./tourPackage/tourPackageRoutes");
 const tourTypesRoutes = require("./tourPackageManagement/tourType/tourTypeRoutes");
 const tourPackages = require("./tourPackageManagement/tourPackage/tourPackageRoutes");
+const cancelConditionsRoutes = require("./tourPackageManagement/cancelConditions/cancelConditionRoutes");
 
 const router = express.Router();
 
@@ -20,5 +21,6 @@ router.use("/v1", setQuestionsAnswers);
 //tourPakcageManagement
 router.use("/v1", tourTypesRoutes);
 router.use("/v1", tourPackages);
+router.use("/v1", cancelConditionsRoutes);
 
 module.exports = router;

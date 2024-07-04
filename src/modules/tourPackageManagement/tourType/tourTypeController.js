@@ -1,10 +1,19 @@
+const TourPackageModel = require("../tourPackage/tourPackageModel");
 const TourTypeModel = require("./tourTypeModel");
 
 const tourTypeController = {
   async createTourType(req, res) {
+    console.log("req::: ", req.body);
     try {
       const tourType = new TourTypeModel(req.body);
       const savedTourType = await tourType.save();
+      //actualiza tourTypes en tourPackage
+      const tourPackageId = savedTourType.tourPackageId;
+      await TourPackageModel.findByIdAndUpdate(
+        tourPackageId,
+        { $push: { tourTypes: savedTourType._id } },
+        { new: true }
+      );
       res.status(201).json(savedTourType);
     } catch (error) {
       console.error("Error al crear el tourType: ", error);
@@ -23,8 +32,8 @@ const tourTypeController = {
   },
 
   async getTourTypeById(req, res) {
+    const { id } = req.params;
     try {
-      const { id } = req.params;
       const tourType = await TourTypeModel.findById(id).populate(
         "tourPackageId"
       );

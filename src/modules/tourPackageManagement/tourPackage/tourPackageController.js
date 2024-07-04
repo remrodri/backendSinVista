@@ -3,7 +3,9 @@ const TourPackageModel = require("./tourPackageModel");
 const tourPackageController = {
   async getAllTourPackages(req, res) {
     try {
-      const tourPackages = await TourPackageModel.find().populate("tourTypes");
+      const tourPackages = await TourPackageModel.find().populate(
+        "tourTypes",
+      );
       res.status(200).json(tourPackages);
     } catch (error) {
       console.error("Error al obtner los paquetes turisticos: ", error);
@@ -12,11 +14,11 @@ const tourPackageController = {
   },
 
   async getTourPackageById(req, res) {
-    const { tourPackageId } = req.params;
+    const { id } = req.params;
     try {
-      const tourPackage = await TourPackageModel.findById(
-        tourPackageId
-      ).populate("tourTypes");
+      const tourPackage = await TourPackageModel.findById(id).populate(
+        "tourTypes"
+      );
       if (!tourPackage) {
         return res.status(404).json({ message: "tourPackage no encontrado" });
       }
@@ -28,6 +30,7 @@ const tourPackageController = {
   },
 
   async createTourPackage(req, res) {
+    // console.log('req::: ', req.body);
     try {
       const newTourPackage = new TourPackageModel(req.body);
       const savedTourPackage = await newTourPackage.save();
@@ -39,11 +42,12 @@ const tourPackageController = {
   },
 
   async updateTourPackage(req, res) {
-    const { tourPackageId } = req.params;
-    const updateData = req.body;
     try {
+      const { id } = req.params;
+      const updateData = req.body;
+      // console.log('tourPackageId::: ', id);
       const updatedTourPackage = await TourPackageModel.findByIdAndUpdate(
-        tourPackageId,
+        id,
         updateData,
         { new: true }
       ).populate("tourTypes");

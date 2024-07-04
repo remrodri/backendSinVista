@@ -2,8 +2,12 @@ const mongoose = require("mongoose");
 const moment = require("moment-timezone");
 
 const itinerarySchema = new mongoose.Schema({
-  hour: { type: String, required: true },
-  activity: { type: String, required: true },
+  activities: [
+    {
+      hour: { type: String, required: true },
+      activity: { type: String, required: true },
+    },
+  ],
 });
 
 const tourTypeSchema = new mongoose.Schema(
@@ -23,7 +27,7 @@ const tourTypeSchema = new mongoose.Schema(
     itinerary: [itinerarySchema],
     attractions: { type: [String], required: true },
     available: { type: Boolean, default: false },
-    duration: { type: Number, required: true },
+    // duration: { type: Number, required: true },
     // availableDates: [Date]
   },
   // { collection: "tourTypes" },
