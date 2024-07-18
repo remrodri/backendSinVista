@@ -28,7 +28,7 @@ const tourTypeSchema = new mongoose.Schema(
     attractions: { type: [String], required: true },
     available: { type: Boolean, default: false },
     // duration: { type: Number, required: true },
-    // availableDates: [Date]
+    availableDates: {type:[String],required:true}
   },
   // { collection: "tourTypes" },
   { timestamps: true, collection: "tourTypes" }

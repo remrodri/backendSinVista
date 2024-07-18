@@ -31,12 +31,29 @@ const tourTypeController = {
     }
   },
 
+  async getTourPackageTourTypes(req, res) {
+    const { id } = req.params;
+    try {
+      const tourPackage = await TourPackageModel.findById(id).populate(
+        "tourTypes"
+      );
+      if (!tourPackage) {
+        return res.status(404).json({ message: "tourPackage no encontrado" });
+      }
+      res.status(200).json(tourPackage.tourTypes);
+    } catch (error) {
+      console.error("Error al obtener el tourPackage: ", error);
+      res.status(500).json({ message: "Error interno del servidor" });
+    }
+  },
+
   async getTourTypeById(req, res) {
     const { id } = req.params;
     try {
-      const tourType = await TourTypeModel.findById(id).populate(
-        "tourPackageId"
-      );
+      // const tourType = await TourTypeModel.findById(id).populate(
+      //   "tourPackageId"
+      // );
+      const tourType = await TourTypeModel.findById(id);
       if (!tourType) {
         return res
           .status(404)
@@ -52,6 +69,8 @@ const tourTypeController = {
   async updateTourType(req, res) {
     try {
       const { id } = req.params;
+      console.log("id::: ", id);
+      console.log("req.body::: ", req.body);
       const updatedTourType = await TourTypeModel.findByIdAndUpdate(
         id,
         req.body,

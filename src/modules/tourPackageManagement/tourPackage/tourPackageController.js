@@ -3,9 +3,7 @@ const TourPackageModel = require("./tourPackageModel");
 const tourPackageController = {
   async getAllTourPackages(req, res) {
     try {
-      const tourPackages = await TourPackageModel.find().populate(
-        "tourTypes",
-      );
+      const tourPackages = await TourPackageModel.find().populate("tourTypes");
       res.status(200).json(tourPackages);
     } catch (error) {
       console.error("Error al obtner los paquetes turisticos: ", error);
@@ -28,6 +26,8 @@ const tourPackageController = {
       res.status(500).json({ message: "Error interno del servidor" });
     }
   },
+
+  
 
   async createTourPackage(req, res) {
     // console.log('req::: ', req.body);
